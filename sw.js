@@ -9,7 +9,7 @@
 "use strict";
 
 const CONFIG = {
-  "version": "2026-10-13-873de1b4",
+  "version": "2026-10-13-f49685c1",
   "shellPrefix": "tangocho-shell-",
   "audioCache": "tangocho-audio-v1",
   "shell": [

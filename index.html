@@ -180,17 +180,29 @@ button {
   cursor: pointer;
 }
 .toc-update[hidden] { display: none; }
-/* 「このアプリについて」への入口。目次の項目の後ろ(スクロールの中)に置き、画面の高さを常には取らない */
+/* 「このアプリについて」への入口。目次の下に置くと目次が縦にスクロールしたので、見出しの行の小さな丸い「i」にした。
+   見た目は 22px、押せる範囲は ::before で 44px に広げる */
 .toc-about {
-  flex: 0 0 40px;
-  border: 0;
+  flex: 0 0 auto;
+  align-self: center;
+  margin-right: auto;
+  position: relative;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1.5px solid var(--muted);
+  border-radius: 50%;
   background: transparent;
   color: var(--muted);
-  font-size: 12px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  font-family: var(--serif-text);
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  line-height: 1;
   cursor: pointer;
 }
+.toc-about::before { content: ""; position: absolute; inset: -11px; }
+.toc-about:active { background: rgba(31, 58, 95, .12); }
 
 /* ---- このアプリについて ---- */
 .about-body {
@@ -530,6 +542,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <div class="view" id="toc">
   <header class="toc-top">
     <h1 class="toc-title">英単語帳</h1>
+    <button type="button" class="toc-about" id="toc-about" aria-label="このアプリについて・ライセンス">i</button>
     <div class="top-count">覚えた <span id="toc-count">0 / 0</span></div>
   </header>
   <!-- 公開版(build_site.py)だけが使う。新しい版を取り終えたのに、単語の画面を開いていて自動で切り替えられなかったときに出す -->
@@ -1100,9 +1113,6 @@ if (typeof document !== "undefined") {
       frag.append(item);
     }
     // 目次の項目と一緒に流れる位置に置く(画面の下に固定すると、そのぶん項目が1画面に収まらなくなる)
-    const about = el("button", "toc-about", "このアプリについて・ライセンス");
-    about.type = "button";
-    frag.append(about);
     $("toc-list").replaceChildren(frag);
 
     const last = loadLastPage();
@@ -1249,6 +1259,7 @@ if (typeof document !== "undefined") {
       if (item) openBook(Number(item.dataset.page));
     });
     $("about-back").addEventListener("click", showToc);
+    $("toc-about").addEventListener("click", showAbout);
     $("toc-resume").addEventListener("click", (e) => openBook(Number(e.currentTarget.dataset.page)));
     $("to-toc").addEventListener("click", showToc);
 
@@ -1270,7 +1281,7 @@ if (typeof document !== "undefined") {
   start();
 }
 </script>
-<script id="site-config" type="application/json">{"version":"2026-10-13-873de1b4","audioCache":"tangocho-audio-v1","audio":["audio/p0001-cbc868c7.json"],"audioWords":100}</script>
+<script id="site-config" type="application/json">{"version":"2026-10-13-f49685c1","audioCache":"tangocho-audio-v1","audio":["audio/p0001-cbc868c7.json"],"audioWords":100}</script>
 <script>
 // 公開版だけに入る部分:Service Worker の登録、新しい版への切り替え、音声のオフライン用の保存。
 // build_site.py が index.html に埋め込む(1ファイル版・Artifact 版には入らない)。
