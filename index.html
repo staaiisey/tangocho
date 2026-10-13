@@ -185,7 +185,6 @@ button {
 .toc-about {
   flex: 0 0 auto;
   align-self: center;
-  margin-right: auto;
   position: relative;
   width: 22px;
   height: 22px;
@@ -203,6 +202,121 @@ button {
 }
 .toc-about::before { content: ""; position: absolute; inset: -11px; }
 .toc-about:active { background: rgba(31, 58, 95, .12); }
+/* 検索への入口(虫めがね)。「i」の右隣に、同じ大きさ(22px)・同じ色・同じ線の太さで置く。
+   丸の枠は付けない(22px の丸の中に虫めがねを描くと、小さすぎて何の絵か分からない)。
+   左の余白は、行のすき間 8px と合わせて「i」との間が 22px になる値。押せる範囲(44px)どうしが重ならない。
+   右の auto で、覚えた数を行の右端へ押しやる */
+.toc-search {
+  flex: 0 0 auto;
+  align-self: center;
+  position: relative;
+  width: 22px;
+  height: 22px;
+  margin: 0 auto 0 14px;
+  padding: 0;
+  border: 0;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='10.2' cy='10.2' r='7' fill='none' stroke='%236F6757' stroke-width='1.9'/%3E%3Cpath d='M15.6 15.6L22 22' fill='none' stroke='%236F6757' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") center / 22px no-repeat;
+  cursor: pointer;
+}
+.toc-search::before { content: ""; position: absolute; inset: -11px; }
+.toc-search:active { opacity: .5; }
+
+/* ---- 検索 ---- */
+.search-bar { flex: 0 0 auto; position: relative; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+.search-input {
+  display: block;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  /* 左は虫めがねの絵、右は「消す」ボタンのぶんを空ける */
+  padding: 0 44px 0 38px;
+  border: 1.5px solid var(--navy);
+  border-radius: 8px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='10.2' cy='10.2' r='7' fill='none' stroke='%231F3A5F' stroke-width='1.9'/%3E%3Cpath d='M15.6 15.6L22 22' fill='none' stroke='%231F3A5F' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") 10px center / 20px no-repeat;
+  color: var(--ink);
+  font-family: var(--sans);
+  /* 16px 未満だと、iPhone は入力欄を選んだときに画面を拡大する */
+  font-size: 16px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.search-input:focus { box-shadow: 0 0 0 3px rgba(31, 58, 95, .18); }
+.search-input::placeholder { color: #A39A86; }
+/* ブラウザが出す「消す」「虫めがね」は、端末ごとに形も有無も違うので消して、自前のボタンにそろえる */
+.search-input::-webkit-search-cancel-button,
+.search-input::-webkit-search-decoration { -webkit-appearance: none; appearance: none; display: none; }
+.search-clear {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23B9AF98'/%3E%3Cpath d='M8 8l8 8M16 8l-8 8' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center / 20px no-repeat;
+  cursor: pointer;
+}
+.search-clear[hidden] { display: none; }
+/* 結果の一覧。縦にスクロールするのはここだけ(入力欄は上に残る) */
+.search-list {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 12px;
+  padding-bottom: var(--safe-bottom);
+}
+/* 結果の1行。番号・単語・品詞・意味を1行に並べ、長い意味は … で切る(行の高さをそろえて、数を多く見せる) */
+.sr {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 2px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.sr:active { background: rgba(31, 58, 95, .07); }
+/* 覚えた語の印。押すものではないので小さく出す。付いていない語も同じ幅を空けて、番号の位置をそろえる */
+.sr-chk { flex: 0 0 14px; height: 14px; border-radius: 50%; }
+.sr.done .sr-chk {
+  background: var(--navy) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 11px no-repeat;
+}
+.sr-no { flex: 0 0 auto; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; letter-spacing: .03em; }
+/* 単語は切らない(何の語か分からなくなる)。足りないぶんは意味の側を切る */
+.sr-word { flex: 0 0 auto; font-family: var(--serif); font-size: 17px; font-weight: bold; color: var(--navy); white-space: nowrap; }
+.sr .pos { top: 0; }
+.sr-meaning {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--red);
+}
+.sr-msg { margin: 30px 8px 6px; text-align: center; font-size: 14px; color: var(--muted); }
+.sr-hint { margin: 0 8px; text-align: center; font-size: 12px; line-height: 1.7; color: var(--muted); }
+.sr-more {
+  display: block;
+  width: 100%;
+  height: 44px;
+  margin: 10px 0 14px;
+  border: 1.5px solid var(--navy);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
 /* ---- このアプリについて ---- */
 .about-body {
@@ -307,6 +421,50 @@ button {
 .tgl-meaning { color: var(--red); }
 .tgl-word[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
 .tgl-meaning[aria-pressed="true"] { background: var(--red); color: #fff; border-color: var(--red); }
+/* 連続再生。「隠す」の2つと同じ行の右端に、幅を決めて置く(行を増やすと5語が1ページに入りきらなくなる。
+   幅を決めておくのは、「連続再生」と「停止」で字数が変わっても左の2つが動かないようにするため) */
+.tgl-seq {
+  flex: 0 0 92px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+.tgl-seq[hidden] { display: none; }
+/* 再生の三角・停止の四角は CSS で描く(記号の文字は、端末によって絵文字に置き換わることがある) */
+.tgl-seq::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 8px;
+  border-color: transparent transparent transparent currentColor;
+}
+.tgl-seq[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.tgl-seq[aria-pressed="true"]::before { width: 9px; height: 9px; border: 0; background: currentColor; }
+
+/* 連続再生の知らせ。行の高さに影響しないよう、ページ送りの行のすぐ上に重ねる(押す操作のじゃまをしない) */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--safe-bottom) + 58px);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(88vw, 420px);
+  padding: 7px 14px;
+  border-radius: 16px;
+  background: rgba(58, 53, 44, .92);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+  pointer-events: none;
+  z-index: 5;
+}
+.toast[hidden] { display: none; }
 
 /* ---- ページ(横スクロール+スナップ) ---- */
 .pager {
@@ -348,6 +506,15 @@ button {
   padding: 4px 0;
 }
 .row:nth-child(5) { border-bottom: 0; }
+/* 連続再生で今読んでいる語。地色と左の線だけで示す(枠や余白を足すと行の高さが変わる) */
+.row.playing { background: rgba(31, 58, 95, .08); box-shadow: inset 3px 0 0 var(--navy); }
+/* 検索から開いた語。蛍光ペンのような黄色を少しの間だけ敷いて消す(連続再生の紺の印と見分けられる色にする。
+   地色だけなので行の高さは変わらない)。クラスは app.js が 2秒後に外す */
+.row.found { animation: found-mark 2s ease-out both; }
+@keyframes found-mark {
+  0%, 55% { background-color: rgba(242, 196, 60, .42); }
+  100% { background-color: rgba(242, 196, 60, 0); }
+}
 
 .chk {
   width: 44px;
@@ -543,6 +710,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <header class="toc-top">
     <h1 class="toc-title">英単語帳</h1>
     <button type="button" class="toc-about" id="toc-about" aria-label="このアプリについて・ライセンス">i</button>
+    <button type="button" class="toc-search" id="toc-search" aria-label="単語を検索"></button>
     <div class="top-count">覚えた <span id="toc-count">0 / 0</span></div>
   </header>
   <!-- 公開版(build_site.py)だけが使う。新しい版を取り終えたのに、単語の画面を開いていて自動で切り替えられなかったときに出す -->
@@ -561,9 +729,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <div class="toggles">
     <button type="button" class="tgl tgl-word" id="hide-word" aria-pressed="false">単語を隠す</button>
     <button type="button" class="tgl tgl-meaning" id="hide-meaning" aria-pressed="false">意味を隠す</button>
+    <!-- 音声を順に読む。音声が1語も無いときは app.js が隠したままにする -->
+    <button type="button" class="tgl tgl-seq" id="seq" aria-pressed="false" hidden><span id="seq-label">連続再生</span></button>
   </div>
 
   <main class="pager" id="pager"></main>
+  <!-- 連続再生の短い知らせ(読み込み中・止まった理由)。ページの上に重ねて出す -->
+  <div class="toast" id="toast" role="status" hidden></div>
 
   <footer class="nav">
     <button type="button" class="nav-btn" id="prev" aria-label="前のページ" disabled>&#x2039;</button>
@@ -572,7 +744,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </footer>
 </div>
 
-<!-- このアプリについて/ライセンス。目次のいちばん下のリンクから開く -->
+<!-- 検索。目次の見出しの行の虫めがねから開く。入力のたびに app.js が描き直すのは、一覧(#search-list)と件数だけ -->
+<div class="view" id="search" hidden>
+  <header class="top">
+    <button type="button" class="to-toc" id="search-back" aria-label="目次へ戻る"><span>目次</span></button>
+    <div class="top-label">検索</div>
+    <div class="top-count"><span id="search-count" role="status"></span></div>
+  </header>
+  <div class="search-bar">
+    <!-- 英単語を打つ欄なので、先頭の大文字化・自動修正・つづりの下線を切る(iPhone が打った語を別の語に直してしまう) -->
+    <input type="search" class="search-input" id="search-input" placeholder="単語・意味・番号" aria-label="検索する言葉"
+      autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+    <button type="button" class="search-clear" id="search-clear" aria-label="入力を消す" hidden></button>
+  </div>
+  <div class="search-list" id="search-list"></div>
+</div>
+
+<!-- このアプリについて/ライセンス。目次の見出しの行の「i」から開く -->
 <div class="view" id="about" hidden>
   <header class="top">
     <button type="button" class="to-toc" id="about-back" aria-label="目次へ戻る"><span>目次</span></button>
@@ -747,6 +935,63 @@ const Core = {
     return i === -1 ? -1 : Math.floor(i / Core.PER_PAGE);
   },
 
+  // 検索で比べるための形にそろえる。打ち方のゆれ(全角の英数字、半角カタカナ、大文字、カタカナとひらがな)で
+  // 当たらなくなるのを防ぐ。漢字とかなの違い(「増える」と「ふえる」)は吸収しない
+  searchKey(s) {
+    if (typeof s !== "string") return "";
+    return s
+      .normalize("NFKC")
+      .toLowerCase()
+      .replace(/[ァ-ヶ]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x60))
+      .replace(/\s+/g, " ")
+      .trim();
+  },
+
+  // 検索用の下ごしらえ(語ごとに、比べる形にした単語・意味・番号)。打つたびに全語を変換し直さないよう、1回だけ作って使い回す。
+  // 例文・和訳は入れない(探したい語と関係のない語が大量に当たるため)
+  searchIndex(words) {
+    return words.map((w) => {
+      const meaning = Core.searchKey(w.meaning);
+      return {
+        id: w.id,
+        no: Core.formatNo(w.id),
+        word: Core.searchKey(w.word),
+        meaning,
+        // 意味は「：」で語義が並ぶ。語義の頭の「(形)」のような注記と「〜」は、語義そのものではないので比べる前に外す
+        senses: meaning.split(":").map((s) => s.replace(/^(\([^)]*\)|[〜~\s])+/, "")),
+      };
+    });
+  },
+
+  // 検索。戻り値は、当たった語の位置(words の並び順での位置)を「近い順」に並べたもの。
+  // 近い順 = 番号そのもの → 番号の頭が同じ → 単語がそのもの → 単語の頭が同じ → 単語の途中 → 語義がそのもの → 語義の頭 → 意味の途中。
+  // 同じ近さの中では番号順(単語帳の並びと同じにして、探しやすくする)
+  search(index, query) {
+    const q = Core.searchKey(query);
+    if (!q || !Array.isArray(index)) return [];
+    // 数字だけなら番号として探す。「412」でも「0412」でも同じ語が先頭に来る
+    const digits = /^\d+$/.test(q);
+    const hits = [];
+    index.forEach((e, i) => {
+      let rank = -1;
+      if (digits) {
+        if (Number(q) === e.id) rank = 0;
+        else if (e.no.startsWith(q) || String(e.id).startsWith(q)) rank = 1;
+      }
+      if (rank === -1) {
+        if (e.word === q) rank = 2;
+        else if (e.word.startsWith(q)) rank = 3;
+        else if (e.word.includes(q)) rank = 4;
+        else if (e.senses.includes(q)) rank = 5;
+        else if (e.senses.some((s) => s.startsWith(q))) rank = 6;
+        else if (e.meaning.includes(q)) rank = 7;
+      }
+      if (rank !== -1) hits.push([rank, i]);
+    });
+    hits.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    return hits.map((h) => h[1]);
+  },
+
   // 発音記号を画面に出す形(/…/)にする。データに無い語・形の崩れた値は空文字(その語は発音記号を出さない)
   ipaLabel(map, id) {
     const v = map && typeof map === "object" ? map[String(id)] : undefined;
@@ -771,6 +1016,21 @@ const Core = {
   packFor(packs, id) {
     const p = packs.find((x) => id >= x.first && id <= x.last);
     return p ? p.file : "";
+  },
+
+  // 連続再生で読む範囲。index(並び順の位置)から、それを含む区切りの終わりまで。戻り値は { from, end }(end は含まない)。
+  // 区切りの一覧を引数で受け取るのは、止まる位置を「100語ごと」に決め打ちしないため(別の分け方の一覧を渡せば、その終わりで止まる)
+  playRange(sections, index) {
+    if (!Array.isArray(sections) || !Number.isInteger(index)) return null;
+    const s = sections.find((x) => index >= x.start && index < x.start + x.count);
+    return s ? { from: index, end: s.start + s.count } : null;
+  },
+
+  // from 以上 end 未満で、音声のある最初の語の位置。無ければ -1(音声の無い語は飛ばして続けるために使う)
+  nextPlayable(words, audio, from, end) {
+    const stop = Math.min(end, words.length);
+    for (let i = Math.max(0, from); i < stop; i++) if (audio.has(words[i].id)) return i;
+    return -1;
   },
 
   // 保存してあった文字列を、単語 id の配列に戻す。壊れていたら空として扱う
@@ -833,6 +1093,8 @@ if (typeof document !== "undefined") {
     audio: new Set(),
     // 公開版だけ:音声の別ファイルの一覧(1ファイル版では空で、音声はページの末尾から取り出す)
     packs: [],
+    // 検索から開いた語の id(その行を少しの間だけ色で知らせる)。無ければ -1
+    found: -1,
   };
 
   const pager = $("pager");
@@ -977,6 +1239,9 @@ if (typeof document !== "undefined") {
     const id = Number(row.dataset.id);
     row.classList.toggle("hw", App.hide.word && !App.shown.word.has(id));
     row.classList.toggle("hm", App.hide.meaning && !App.shown.meaning.has(id));
+    // 連続再生で今読んでいる語。行は前後のページぶんしか描いていないので、描き直されても付くようにここで合わせる
+    row.classList.toggle("playing", Seq.id === id);
+    row.classList.toggle("found", App.found === id);
     row.querySelector(".chk").setAttribute("aria-pressed", App.learned.has(id) ? "true" : "false");
   }
 
@@ -1006,18 +1271,27 @@ if (typeof document !== "undefined") {
   // 音声は build.py がページの末尾に <script id="au<id>"> の形で埋め込む(中身は mp3 の base64)。
   // 押された語のぶんだけ取り出すので、鳴らすまでは何も解析しない
   let player = null;
-  function playBase64(b64) {
+  function thePlayer() {
+    if (!player) player = new Audio();
+    return player;
+  }
+
+  // 鳴らし始める。戻り値は play() の結果(連続再生が、鳴らせなかった理由を見分けるために使う)
+  function playSrc(src) {
     try {
       // Audio は1つを使い回す(iPhone は、指で押して鳴らした Audio を次からも鳴らしやすい。前の音も確実に止められる)
-      if (!player) player = new Audio();
-      player.pause();
-      player.src = "data:audio/mpeg;base64," + b64;
+      thePlayer().pause();
+      player.src = src;
       const p = player.play();
-      // 連打で前の再生が取り消されたとき・再生できない環境では失敗するが、単語帳としては何も困らないので捨てる
-      if (p && typeof p.catch === "function") p.catch(() => {});
+      return p && typeof p.then === "function" ? p : Promise.resolve();
     } catch (e) {
-      /* 鳴らせなくても落とさない */
+      return Promise.reject(e);
     }
+  }
+
+  function playBase64(b64) {
+    // 連打で前の再生が取り消されたとき・再生できない環境では失敗するが、単語帳としては何も困らないので捨てる
+    playSrc("data:audio/mpeg;base64," + b64).catch(() => {});
   }
 
   // 公開版の音声ファイル({ "<id>": "<mp3 の base64>" })。読み終えたものと、読んでいる途中のもの。
@@ -1052,21 +1326,250 @@ if (typeof document !== "undefined") {
     }
   }
 
-  function playWord(id) {
+  // その語の音声(mp3 の base64)が、待たずに手に入るならそれを返す。まだ読めていなければ空文字
+  function audioNow(id) {
     const node = $("au" + id);
-    if (node) {
-      playBase64(node.textContent);
+    if (node) return node.textContent;
+    const pack = packLoaded.get(Core.packFor(App.packs, id));
+    const b64 = pack ? pack[String(id)] : "";
+    return typeof b64 === "string" ? b64 : "";
+  }
+
+  // 音声ファイルを読んでから返す。ファイルにその語が無ければ空文字、ファイルが取れなければ失敗
+  function audioLater(id) {
+    const file = Core.packFor(App.packs, id);
+    if (!file) return Promise.resolve("");
+    return loadPack(file).then((pack) => (typeof pack[String(id)] === "string" ? pack[String(id)] : ""));
+  }
+
+  function playWord(id) {
+    // 読み終えていれば、待たずにその場で鳴らす(上の理由)
+    const b64 = audioNow(id);
+    if (b64) playBase64(b64);
+    else audioLater(id).then((late) => late && playBase64(late), () => {});
+  }
+
+  // ---- 連続再生 ----
+  // 今のページの先頭の語から、区切りの最後の語まで、1語ずつ順に鳴らす。ページの語を読み終えたら次のページへ送る。
+  //
+  // iPhone は「指で押した処理の中」で始めた再生しか許さない。2語目からは押していないので、
+  // 最初の1回を押した処理の中で鳴らした同じ Audio の src を差し替えて鳴らし続ける(別の Audio を作ると鳴らない)
+  const SEQ_GAP_MS = 1000; // 語と語の間
+  const SEQ_SETTLE_MS = 400; // 手でページを送ったあと、そのページから読み直すまでの待ち(続けて何ページも送る間は鳴らさない)
+  const SEQ_STUCK_MS = 8000; // 「鳴り終わった」の知らせが来ないまま止まり続けないための上限(1語は長くても2秒ほど)
+  const SEQ_LOAD_MS = 20000; // 音声ファイルが取れるのを待つ上限
+  const Seq = {
+    on: false,
+    id: -1, // 今読んでいる語の id(行の色を変えるため)
+    end: 0, // ここ(並び順の位置)の手前まで読む
+    token: 0, // 進むたびに増やす。古い再生の「終わった」「失敗した」が、あとから届いても無視するため
+    timer: 0,
+    guard: 0,
+    waiting: false, // 音声ファイルが読めるのを待っている(まだ何も鳴らしていない)
+    moving: -1, // 自動でページを送っている間の行き先(手で送ったのと見分けるため)
+    movingTimer: 0,
+  };
+
+  // 連続再生の止まる位置を決める区切り。今は目次と同じ。分け方を切り替えられるようにするときは、ここで今の分け方を返す
+  function seqSections() {
+    return Core.sections(App.words);
+  }
+
+  // 0.1 秒の無音。最初の語の音声がまだ読めていないとき、押した処理の中でこれを鳴らして Audio を使える状態にしておく
+  let silentSrc = "";
+  function silence() {
+    if (silentSrc) return silentSrc;
+    const n = 800;
+    const b = new Uint8Array(44 + n);
+    const v = new DataView(b.buffer);
+    const put = (at, s) => [...s].forEach((c, i) => (b[at + i] = c.charCodeAt(0)));
+    put(0, "RIFF");
+    v.setUint32(4, 36 + n, true);
+    put(8, "WAVEfmt ");
+    v.setUint32(16, 16, true);
+    v.setUint16(20, 1, true);
+    v.setUint16(22, 1, true);
+    v.setUint32(24, 8000, true);
+    v.setUint32(28, 8000, true);
+    v.setUint16(32, 1, true);
+    v.setUint16(34, 8, true);
+    put(36, "data");
+    v.setUint32(40, n, true);
+    b.fill(128, 44);
+    silentSrc = "data:audio/wav;base64," + btoa(String.fromCharCode(...b));
+    return silentSrc;
+  }
+
+  // 短い知らせ。行の高さを変えないよう、ページの上に重ねて出す(ms を省くと、消すまで出したまま)
+  let toastTimer = 0;
+  function toast(text, ms) {
+    clearTimeout(toastTimer);
+    $("toast").textContent = text;
+    $("toast").hidden = !text;
+    if (text && ms) toastTimer = setTimeout(() => ($("toast").hidden = true), ms);
+  }
+
+  function seqMark(id) {
+    Seq.id = id;
+    applyAllRows();
+  }
+
+  // 進行中のもの(待ち・再生・古い知らせ)を全部やめる。連続再生そのものを切るかどうかは呼ぶ側が決める
+  function seqCancel() {
+    Seq.token++;
+    clearTimeout(Seq.timer);
+    clearTimeout(Seq.guard);
+    if (player) {
+      player.onended = null;
+      player.onerror = null;
+      player.pause();
+    }
+  }
+
+  function seqStop(message) {
+    if (!Seq.on) return;
+    seqCancel();
+    Seq.on = false;
+    Seq.moving = -1;
+    clearTimeout(Seq.movingTimer);
+    seqMark(-1);
+    $("seq").setAttribute("aria-pressed", "false");
+    $("seq-label").textContent = "連続再生";
+    toast(message || "", 3000);
+  }
+
+  // 連続再生が自分でページを送る。スクロールの知らせは手で送ったときと同じ形で届くので、行き先を覚えておいて見分ける
+  function seqMove(page) {
+    if (page === App.cur) return;
+    clearTimeout(Seq.movingTimer);
+    if (Math.abs(page - App.cur) === 1) {
+      Seq.moving = page;
+      // 途中で指で止められると行き先に着かない。覚えたままだと、その後の手での送りを見落とすので時間で忘れる
+      Seq.movingTimer = setTimeout(() => (Seq.moving = -1), 1500);
+      goTo(page);
+    } else {
+      // 音声の無い語が続いて何ページも先へ行くときは、途中のページを流さずに移る。
+      // 今のページをここで書き換えるので「ページが変わった」の知らせは来ない(行き先を覚えておく必要がない)
+      Seq.moving = -1;
+      setCurrent(page);
+      pager.scrollLeft = page * pager.clientWidth;
+    }
+  }
+
+  // index(並び順の位置)から読み始める。その位置を含む区切りの終わりが、止まる位置になる
+  function seqStartFrom(index) {
+    const range = Core.playRange(seqSections(), index);
+    const first = range ? Core.nextPlayable(App.words, App.audio, range.from, range.end) : -1;
+    if (first === -1) {
+      seqStop("この範囲には音声がありません。");
+      return false;
+    }
+    Seq.end = range.end;
+    seqPlay(first);
+    return true;
+  }
+
+  function seqPlay(i) {
+    seqCancel();
+    const my = Seq.token;
+    const w = App.words[i];
+    seqMove(Math.floor(i / Core.PER_PAGE));
+    seqMark(w.id);
+
+    const fire = (b64) => {
+      let done = false;
+      const next = () => {
+        if (done || my !== Seq.token) return;
+        done = true;
+        clearTimeout(Seq.guard);
+        seqAfter(i);
+      };
+      // スピーカーを一度も押さずに連続再生から始めたときは、ここではじめて Audio を作る
+      thePlayer().onended = next;
+      // 1語のデータが壊れていても、そこで全体を止めずに次へ進む
+      player.onerror = next;
+      Seq.guard = setTimeout(next, SEQ_STUCK_MS);
+      playSrc("data:audio/mpeg;base64," + b64).catch((e) => {
+        if (my !== Seq.token) return;
+        // 再生そのものを端末に断られた(押した操作から続いた再生と認められなかった)ときは、進めても全部断られるので止める
+        if (e && e.name === "NotAllowedError") seqStop("この端末では、続けて再生できませんでした。");
+        else next();
+      });
+    };
+
+    const b64 = audioNow(w.id);
+    Seq.waiting = !b64;
+    if (b64) {
+      toast("");
+      fire(b64);
       return;
     }
-    const file = Core.packFor(App.packs, id);
-    if (!file) return;
-    const play = (pack) => {
-      const b64 = pack[String(id)];
-      if (typeof b64 === "string" && b64) playBase64(b64);
-    };
-    // 読み終えていれば、待たずにその場で鳴らす(上の理由)
-    if (packLoaded.has(file)) play(packLoaded.get(file));
-    else loadPack(file).then(play, () => {});
+    // 公開版で、この語の入った音声ファイルがまだ読めていない。取れるまで待ち、取れなければ止めて知らせる
+    toast("音声を読み込んでいます…");
+    const limit = new Promise((_, reject) => (Seq.guard = setTimeout(() => reject(new Error("timeout")), SEQ_LOAD_MS)));
+    Promise.race([audioLater(w.id), limit]).then(
+      (late) => {
+        if (my !== Seq.token) return;
+        clearTimeout(Seq.guard);
+        toast("");
+        if (late) fire(late);
+        else seqAfter(i);
+      },
+      () => {
+        if (my === Seq.token) seqStop("音声を取得できませんでした。通信できる所で、もう一度お試しください。");
+      }
+    );
+  }
+
+  // i の語を読み終えたあと。次の語があれば間をあけて読み、無ければ(区切りの最後まで読んだら)止まる
+  function seqAfter(i) {
+    const next = Core.nextPlayable(App.words, App.audio, i + 1, Seq.end);
+    if (next === -1) {
+      seqStop(Core.formatNo(App.words[Seq.end - 1].id) + " まで再生しました。");
+      return;
+    }
+    // ページをまたぐときは、間のうちに先にページを送っておく(次の語が鳴る時には、その語が見えている)
+    seqMove(Math.floor(next / Core.PER_PAGE));
+    const file = Core.packFor(App.packs, App.words[next].id);
+    if (file) loadPack(file).catch(() => {});
+    const my = Seq.token;
+    Seq.timer = setTimeout(() => {
+      if (my === Seq.token) seqPlay(next);
+    }, SEQ_GAP_MS);
+  }
+
+  // ページが変わったとき(スクロールの知らせから呼ぶ)。手で送られたのなら、そのページの先頭から読み直す。
+  // 止めずに続けるのは、「少し先から聞きたい」ときに送るだけで済むようにするため(止めたいときはボタンを押す)
+  function seqPageChanged(idx) {
+    if (!Seq.on) return;
+    if (Seq.moving !== -1) {
+      if (idx === Seq.moving) {
+        Seq.moving = -1;
+        clearTimeout(Seq.movingTimer);
+      }
+      return;
+    }
+    seqCancel();
+    seqMark(-1);
+    toast("");
+    const my = Seq.token;
+    Seq.timer = setTimeout(() => {
+      if (my === Seq.token) seqStartFrom(idx * Core.PER_PAGE);
+    }, SEQ_SETTLE_MS);
+  }
+
+  function seqToggle() {
+    if (Seq.on) {
+      seqStop();
+      return;
+    }
+    Seq.on = true;
+    $("seq").setAttribute("aria-pressed", "true");
+    $("seq-label").textContent = "停止";
+    if (!seqStartFrom(App.cur * Core.PER_PAGE)) return;
+    // この「押した処理」の中で必ず1回 play() を呼ぶ。最初の語がすぐ鳴らせないとき(音声ファイルを読んでいる途中)は、
+    // 代わりに無音を鳴らして、あとから差し替えて鳴らせる状態にしておく
+    if (Seq.waiting) playSrc(silence()).catch(() => {});
   }
 
   // center の前後 KEEP ページだけ中身を描き、離れたページは空にする
@@ -1127,15 +1630,160 @@ if (typeof document !== "undefined") {
   }
 
   function showToc() {
+    // 見えていない画面で読み続けない
+    seqStop();
+    toast("");
     renderToc();
     $("book").hidden = true;
     $("about").hidden = true;
+    $("search").hidden = true;
     $("toc").hidden = false;
   }
 
   function showAbout() {
     $("toc").hidden = true;
     $("about").hidden = false;
+  }
+
+  // ---- 検索 ----
+  // 入力のたびに描き直すのは結果の一覧と件数だけ。入力欄には触らない
+  // (入力欄ごと作り直すと、日本語の変換中の文字が消え、キーボードも閉じる)
+  const SEARCH_STEP = 50; // 一度に出す件数。「e」のような短い語は数百件当たるので、全部は描かない
+  const FOUND_MS = 2000; // 検索から開いた語を色で知らせる時間
+  const Search = {
+    index: null,
+    hits: [],
+    shown: 0,
+    // 検索の画面を離れたときの一覧の位置(隠した要素はスクロール位置を忘れることがあるので、自分で覚えて戻す)
+    scroll: 0,
+  };
+
+  function buildHit(i) {
+    const w = App.words[i];
+    const b = el("button", "sr");
+    b.type = "button";
+    b.dataset.i = String(i);
+    if (App.learned.has(w.id)) b.classList.add("done");
+    // 覚えた語の印。押すものではないので、単語の画面の丸より小さく・薄く出す
+    b.append(el("span", "sr-chk"), el("span", "sr-no", Core.formatNo(w.id)), el("span", "sr-word", w.word));
+    if (w.pos) b.append(el("span", "pos", w.pos));
+    b.append(el("span", "sr-meaning", w.meaning));
+    return b;
+  }
+
+  function renderSearch() {
+    const list = $("search-list");
+    const q = Core.searchKey($("search-input").value);
+    const total = Search.hits.length;
+    $("search-count").textContent = q ? total + " 件" : "";
+    $("search-clear").hidden = !$("search-input").value;
+    const frag = document.createDocumentFragment();
+    if (!q) {
+      frag.append(el("p", "sr-msg", "英単語・日本語の意味・番号で探せます。"));
+      frag.append(el("p", "sr-hint", "例: inc / 増 / 412"));
+    } else if (!total) {
+      frag.append(el("p", "sr-msg", "当てはまる単語がありません。"));
+      frag.append(el("p", "sr-hint", "意味は、漢字とかなの書き方が違うと当たりません(「ふえる」では「増える」は出ません)。短い言葉で試してください。"));
+    } else {
+      for (const i of Search.hits.slice(0, Search.shown)) frag.append(buildHit(i));
+      if (total > Search.shown) {
+        const more = el("button", "sr-more", "さらに表示(残り " + (total - Search.shown) + " 件)");
+        more.type = "button";
+        frag.append(more);
+      }
+    }
+    list.replaceChildren(frag);
+  }
+
+  function runSearch() {
+    if (!Search.index) Search.index = Core.searchIndex(App.words);
+    Search.hits = Core.search(Search.index, $("search-input").value);
+    Search.shown = Math.min(SEARCH_STEP, Search.hits.length);
+    renderSearch();
+    // 条件が変わったら、いちばん近い結果(先頭)が見える位置に戻す
+    $("search-list").scrollTop = 0;
+  }
+
+  function showSearch() {
+    // 目次からしか来ないので止まっているはずだが、見えない画面で読み続けないよう念のため止める
+    seqStop();
+    toast("");
+    $("toc").hidden = true;
+    $("book").hidden = true;
+    $("about").hidden = true;
+    $("search").hidden = false;
+    // 前の検索語と結果は残す(1語見て戻り、次の語を見る、を続けやすいように)。
+    // 描き直すのは、単語の画面で付け外しした「覚えた」の印を合わせるため
+    renderSearch();
+    $("search-list").scrollTop = Search.scroll;
+    // 検索語が空のときだけ、すぐ打てるように入力欄を選ぶ。結果が残っているときに選ぶと、キーボードが結果を隠す
+    if (!$("search-input").value) $("search-input").focus();
+  }
+
+  // 検索結果から単語の画面へ。その語のあるページを開き、行を少しの間だけ色で知らせる
+  let foundTimer = 0;
+  function openFound(i) {
+    const w = App.words[i];
+    Search.scroll = $("search-list").scrollTop;
+    $("search-input").blur();
+    // 「隠す」がオンでも、調べに来た語だけは見える状態で開く(ほかの4語は隠れたまま)
+    App.shown.word.add(w.id);
+    App.shown.meaning.add(w.id);
+    App.found = w.id;
+    $("search").hidden = true;
+    openBook(Math.floor(i / Core.PER_PAGE));
+    applyAllRows();
+    clearTimeout(foundTimer);
+    foundTimer = setTimeout(() => {
+      App.found = -1;
+      applyAllRows();
+    }, FOUND_MS);
+  }
+
+  function initSearch() {
+    const input = $("search-input");
+    const list = $("search-list");
+    $("toc-search").addEventListener("click", showSearch);
+    $("search-back").addEventListener("click", () => {
+      Search.scroll = list.scrollTop;
+      input.blur();
+      showToc();
+    });
+    // 変換中(確定前)の文字でも input は届く。結果だけを描き直すので、変換は途切れない
+    input.addEventListener("input", runSearch);
+    // キーボードの「検索」「改行」は、キーボードを閉じて結果を広く見せる合図として扱う
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.isComposing) input.blur();
+    });
+    $("search-clear").addEventListener("click", () => {
+      input.value = "";
+      runSearch();
+      input.focus();
+    });
+    list.addEventListener("click", (e) => {
+      if (e.target.closest(".sr-more")) {
+        // 位置を覚えて戻す(描き直しても、読んでいた所から続きが出るように)
+        const top = list.scrollTop;
+        Search.shown = Math.min(Search.shown + SEARCH_STEP, Search.hits.length);
+        renderSearch();
+        list.scrollTop = top;
+        return;
+      }
+      const hit = e.target.closest(".sr");
+      if (hit) openFound(Number(hit.dataset.i));
+    });
+    // 結果を指で動かし始めたらキーボードを閉じる(キーボードが出たままだと、結果が数件しか見えない)
+    list.addEventListener("touchmove", () => input.blur(), { passive: true });
+    // iPhone はキーボードが出ても画面の高さ(レイアウト)が変わらず、一覧の下のほうがキーボードの裏に入る。
+    // 見えている範囲との差のぶんだけ一覧の下に余白を足し、最後の結果までキーボードの上に出せるようにする
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener("resize", () => {
+        // 拡大表示(ピンチ)でも見えている範囲は小さくなるので、そのときは足さない
+        const gap = vv.scale > 1.01 ? 0 : Math.round(window.innerHeight - vv.height - vv.offsetTop);
+        list.style.paddingBottom = gap > 0 ? gap + "px" : "";
+      });
+    }
   }
 
   // 目次から単語の画面へ。行き先のページを開くだけで、ページの並びは全体でつながったまま
@@ -1196,6 +1844,8 @@ if (typeof document !== "undefined") {
     }
 
     if (e.target.closest(".spk")) {
+      // 連続再生の途中で1語を選んで聞いたら、連続再生は終わりにする(2つの音が取り合いにならないように)
+      seqStop();
       // 単語を隠している間は「音から単語を当てる」練習になるので、鳴らすだけで帯は開かない
       playWord(id);
       return;
@@ -1220,7 +1870,10 @@ if (typeof document !== "undefined") {
       const w = pager.clientWidth;
       if (!w) return;
       const idx = Math.min(App.pages - 1, Math.max(0, Math.round(pager.scrollLeft / w)));
-      if (idx !== App.cur) setCurrent(idx);
+      if (idx !== App.cur) {
+        setCurrent(idx);
+        seqPageChanged(idx);
+      }
     });
   }
 
@@ -1260,6 +1913,7 @@ if (typeof document !== "undefined") {
     });
     $("about-back").addEventListener("click", showToc);
     $("toc-about").addEventListener("click", showAbout);
+    initSearch();
     $("toc-resume").addEventListener("click", (e) => openBook(Number(e.currentTarget.dataset.page)));
     $("to-toc").addEventListener("click", showToc);
 
@@ -1269,6 +1923,13 @@ if (typeof document !== "undefined") {
     $("next").addEventListener("click", () => goTo(App.cur + 1));
     $("hide-word").addEventListener("click", () => setHide("word", !App.hide.word));
     $("hide-meaning").addEventListener("click", () => setHide("meaning", !App.hide.meaning));
+    // 音声が1語も無いとき(開発用の表示など)は、押しても何も起きないボタンを出さない
+    $("seq").hidden = App.audio.size === 0;
+    $("seq").addEventListener("click", seqToggle);
+    // 画面を消した・別のアプリに移ったときは止める(裏では端末が音や待ち時間を止めるので、戻ったときに途中から急に鳴り出すのを防ぐ)
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState !== "visible") seqStop();
+    });
     // 画面の幅が変わると(回転など)スクロール位置がページの途中になるので、今のページに合わせ直す
     window.addEventListener("resize", () => {
       // 目次を出している間は幅が 0 なので触らない(位置は openBook が入れ直す)
@@ -1281,7 +1942,7 @@ if (typeof document !== "undefined") {
   start();
 }
 </script>
-<script id="site-config" type="application/json">{"version":"2026-10-13-f49685c1","audioCache":"tangocho-audio-v1","audio":["audio/p0001-cbc868c7.json"],"audioWords":100}</script>
+<script id="site-config" type="application/json">{"version":"2026-10-13-d13c18cc","audioCache":"tangocho-audio-v1","audio":["audio/p0001-cbc868c7.json"],"audioWords":100}</script>
 <script>
 // 公開版だけに入る部分:Service Worker の登録、新しい版への切り替え、音声のオフライン用の保存。
 // build_site.py が index.html に埋め込む(1ファイル版・Artifact 版には入らない)。
@@ -1325,10 +1986,11 @@ if (typeof document !== "undefined") {
   }
   // 新しい版を取り終えていたら切り替える。
   // 目次(または「このアプリについて」)にいる間は、読み込み直しても失うものが無いのですぐ切り替える。
-  // 単語の画面を開いている間は、勝手に読み込み直さず、目次に知らせを出して、使っている人に押してもらう
+  // 単語の画面・検索の画面を開いている間は、勝手に読み込み直さず、目次に知らせを出して、使っている人に押してもらう
+  // (検索は、読み込み直すと打った言葉と結果が消える)
   function offer() {
     if (!reg || !reg.waiting) return;
-    if ($("book").hidden) apply();
+    if ($("book").hidden && $("search").hidden) apply();
     else $("toc-update").hidden = false;
   }
   function watch(worker) {
