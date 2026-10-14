@@ -9,7 +9,7 @@
 "use strict";
 
 const CONFIG = {
-  "version": "2026-10-13-d13c18cc",
+  "version": "2026-10-14-47702868",
   "shellPrefix": "tangocho-shell-",
   "audioCache": "tangocho-audio-v1",
   "shell": [
@@ -22,7 +22,16 @@ const CONFIG = {
     "icons/favicon-32.png"
   ],
   "audio": [
-    "audio/p0001-cbc868c7.json"
+    "audio/p0001-cbc868c7.json",
+    "audio/p0101-99f6217d.json",
+    "audio/p0201-c5b0e6d9.json",
+    "audio/p0301-7e00e5de.json",
+    "audio/p0401-13ea68f2.json",
+    "audio/p0501-3ec43db0.json",
+    "audio/p0601-0bc69269.json",
+    "audio/p0701-b76f348c.json",
+    "audio/p0801-6bd374f1.json",
+    "audio/p0901-d42c99e2.json"
   ]
 };
 const SHELL_CACHE = CONFIG.shellPrefix + CONFIG.version;
